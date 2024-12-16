@@ -8,12 +8,12 @@ across a wide variety of large language models, both hosted, and local
 
 ## Plans
 
-- [] Working chat application on openAI, that is able to have a memory window
-- [] Select a document to chat with
-- [] UI to configure connection with OpenAI
-- [] Support for other major cloud providers
-- [] Support for local language models
-- [] Saving chat history window, and settings
+- ~Working chat application on openAI, that is able to have a memory window~
+- Select a document to chat with
+- UI to configure connection with OpenAI
+- Support for other major cloud providers
+- Support for local language models
+- Saving chat history window, and settings
 
 ## Building
 

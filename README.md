@@ -1,6 +1,7 @@
 # Rag-stack
 A desktop app for conversing with documents (or it will be!)
-![image](https://github.com/user-attachments/assets/a11af3e8-e1d6-433a-8cf6-02b237f57b6e)
+
+![Screenshot from 2024-12-19 22-56-17](https://github.com/user-attachments/assets/247161ce-a273-44a5-9740-3ffe4f23351b)
 
 
 ## Goal

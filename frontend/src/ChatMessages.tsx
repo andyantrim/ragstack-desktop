@@ -1,5 +1,7 @@
 import React from 'react';
 import { MessageSquare, User } from 'lucide-react';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 interface Message {
     text: string;
@@ -12,7 +14,21 @@ interface MessageListProps {
     messagesEndRef: React.RefObject<HTMLDivElement>;
 }
 
+// Configure marked options
+marked.setOptions({
+    breaks: true,  // Convert \n to <br>
+    gfm: true,     // GitHub Flavored Markdown
+});
+
 export const MessageList: React.FC<MessageListProps> = ({ messages, messagesEndRef }) => {
+    // Function to safely render markdown
+    const renderMarkdown = (text: string) => {
+        // Convert markdown to HTML and sanitize
+        const rawHtml = marked(text, {async: false});
+        const cleanHtml = DOMPurify.sanitize(rawHtml);
+        return { __html: cleanHtml };
+    };
+
     return (
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {messages.length === 0 && (
@@ -44,7 +60,14 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, messagesEndR
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-white text-gray-800'
                         } shadow-md`}>
-                            <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                            <div 
+                                className={`prose prose-sm max-w-none ${
+                                    message.sender === 'user'
+                                        ? 'prose-invert' 
+                                        : 'prose-gray'
+                                } markdown-content`}
+                                dangerouslySetInnerHTML={renderMarkdown(message.text)}
+                            />
                         </div>
                         <span className="text-xs text-gray-500 mt-1 px-2">
                             {message.timestamp}

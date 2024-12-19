@@ -872,3 +872,15 @@ body {
 .focus\:ring-offset-2:focus {
   --tw-ring-offset-width: 2px;
 }
+
+.markdown-content pre {
+    @apply bg-gray-100 dark:bg-gray-800 p-3 rounded-lg my-2 overflow-x-auto;
+}
+
+.markdown-content code {
+    @apply bg-gray-100 dark:bg-gray-800 px-1 rounded;
+}
+
+.markdown-content pre code {
+    @apply bg-transparent p-0;
+}

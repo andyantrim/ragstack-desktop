@@ -5,3 +5,7 @@
 export function Ask(arg1) {
   return window['go']['main']['App']['Ask'](arg1);
 }
+
+export function SelectFile() {
+  return window['go']['main']['App']['SelectFile']();
+}

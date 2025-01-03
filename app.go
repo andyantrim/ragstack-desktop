@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"ragstack-desktop/ai"
+	"time"
 
-	"github.com/tmc/langchaingo/chains"
 	"github.com/tmc/langchaingo/documentloaders"
 	"github.com/tmc/langchaingo/llms"
-	"github.com/tmc/langchaingo/llms/openai"
 	"github.com/tmc/langchaingo/schema"
 	"github.com/tmc/langchaingo/textsplitter"
 
@@ -27,7 +27,7 @@ type App struct {
 	ctx      context.Context
 	messages []llms.MessageContent
 	log      *slog.Logger
-	chain    chains.Chain
+	llm      *ai.LLM
 	filepath string
 	docs     []schema.Document
 }
@@ -43,35 +43,23 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.log = slog.Default()
 
-	llm, err := openai.New(openai.WithModel("gpt-4o-mini"))
+	var err error
+	a.llm, err = ai.NewLLM()
 	if err != nil {
-		slog.Error("failed to start llm connection", err)
 		panic(err)
 	}
-	a.chain = chains.LoadStuffQA(llm)
 }
 
 // Ask returns an LLM answer to a question
 func (a *App) Ask(question string) string {
-	result, err := chains.Call(a.ctx, a.chain, map[string]any{
-		"input_documents": a.docs,
-		"question":        question,
-	})
+	ctx, cancel := context.WithTimeout(a.ctx, time.Second*30)
+	defer cancel()
+	resp, err := a.llm.Query(ctx, question, &a.docs)
 	if err != nil {
-		a.log.Error("failed", err)
-		return fmt.Sprintf("%w", err)
+		a.log.Error("Failed to query llm %w", err)
+		return fmt.Sprintf("%s", err.Error())
 	}
-	rawValue, exist := result["text"]
-	if !exist {
-		a.log.Error("cannot parse response")
-		return "Cannot parse response"
-	}
-	if value, ok := rawValue.(string); !ok {
-		a.log.Error("cannot parse response value to string")
-		return "Cannot parse response value to string"
-	} else {
-		return value
-	}
+	return resp
 }
 
 func (a *App) SelectFile() string {
@@ -81,7 +69,7 @@ func (a *App) SelectFile() string {
 		Filters: []wails.FileFilter{
 			{
 				DisplayName: "Plain text files (*.txt,*.md)",
-				Pattern:     "*.txt;*.md",
+				Pattern:     "*.txt;*.md", // TODO: This could be any plain text file
 			},
 		},
 	})
@@ -93,7 +81,7 @@ func (a *App) SelectFile() string {
 		return fmt.Sprintf("%w", err)
 	}
 
-	a.log.Warn(a.filepath)
+	a.log.Debug(a.filepath)
 
 	return a.filepath
 }

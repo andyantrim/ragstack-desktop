@@ -30,7 +30,7 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, messagesEndR
     };
 
     return (
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 w-1/2">
             {messages.length === 0 && (
                 <div className="flex items-center justify-center h-full">
                     <p className="text-gray-500 text-sm">Start a conversation...</p>
@@ -54,18 +54,18 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, messagesEndR
                     </div>
                     
                     {/* Message Bubble */}
-                    <div className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                        <div className={`max-w-lg px-4 py-3 rounded-2xl ${
+                    <div className={`flex flex-col ${message.sender === 'user' ? 'items-end' : 'items-start'} max-w-full`}>
+                        <div className={`px-4 py-3 rounded-2xl ${
                             message.sender === 'user' 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-white text-gray-800'
-                        } shadow-md`}>
+                        } shadow-md overflow-hidden break-words w-full`}>
                             <div 
-                                className={`prose prose-sm max-w-none ${
+                                className={`prose prose-sm ${
                                     message.sender === 'user'
                                         ? 'prose-invert' 
                                         : 'prose-gray'
-                                } markdown-content`}
+                                } markdown-content break-words whitespace-pre-wrap`}
                                 dangerouslySetInnerHTML={renderMarkdown(message.text)}
                             />
                         </div>
